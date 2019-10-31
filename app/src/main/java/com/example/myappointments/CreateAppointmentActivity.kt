@@ -1,5 +1,6 @@
 package com.example.myappointments
 
+import android.app.AlertDialog
 import android.app.DatePickerDialog
 import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
@@ -109,4 +110,18 @@ class CreateAppointmentActivity : AppCompatActivity() {
 
     private fun Int.twoDigits() = if (this>=10) this.toString() else "0$this"
 
+    override fun onBackPressed() {
+        val builder = AlertDialog.Builder(this)
+        builder.setTitle(getString(R.string.dialog_create_appointment_exit_title))
+        builder.setMessage(getString(R.string.ialog_create_appointment_exit_message))
+        builder.setPositiveButton(getString(R.string.ialog_create_appointment_exit_positive_button)) { _, _ ->
+            finish()
+        }
+        builder.setNegativeButton(getString(R.string.ialog_create_appointment_exit_negative_button)) { dialog, _ ->
+            dialog.dismiss()
+        }
+
+        val dialog = builder.create()
+        dialog.show()
+    }
 }

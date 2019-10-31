@@ -38,5 +38,9 @@
     <string name="item_appointment_time">A las %1$s</string>
     <string name="label_my_appointments">Mis citas médicas</string>
     <string name="press_back_again">presione una vez mas la salida</string>
+    <string name="dialog_create_appointment_exit_title">¿Estás seguro que deseas salir?</string>
+    <string name="ialog_create_appointment_exit_message">Si abandonas el registro los datos ingresados se perderán.</string>
+    <string name="ialog_create_appointment_exit_positive_button">Si, salir</string>
+    <string name="ialog_create_appointment_exit_negative_button">Continuar registro</string>
 
 </resources>
