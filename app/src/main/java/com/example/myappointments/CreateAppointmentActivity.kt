@@ -6,13 +6,13 @@ import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
-import android.view.ViewAnimationUtils
 import android.widget.ArrayAdapter
-import android.widget.DatePicker
 import android.widget.RadioButton
 import android.widget.Toast
 import androidx.annotation.RequiresApi
-import kotlinx.android.synthetic.main.activity_create_appointment.*
+import kotlinx.android.synthetic.main.card_view_step_one.*
+import kotlinx.android.synthetic.main.card_view_step_three.*
+import kotlinx.android.synthetic.main.card_view_step_two.*
 import java.util.*
 
 class CreateAppointmentActivity : AppCompatActivity() {
@@ -25,8 +25,17 @@ class CreateAppointmentActivity : AppCompatActivity() {
         setContentView(R.layout.activity_create_appointment)
 
         btnNext.setOnClickListener {
-            cvStep1.visibility = View.GONE
-            cvStep2.visibility = View.VISIBLE
+            if (etDescription.text.toString().length < 3) {
+                etDescription.error = getString(R.string.validate_appointment_description)
+            } else {
+                cvStep1.visibility = View.GONE
+                cvStep2.visibility = View.VISIBLE
+            }
+        }
+
+        btnNext2.setOnClickListener {
+            cvStep2.visibility = View.GONE
+            cvStep3.visibility = View.VISIBLE
         }
 
         btnConfirmAppointment.setOnClickListener {
@@ -111,17 +120,30 @@ class CreateAppointmentActivity : AppCompatActivity() {
     private fun Int.twoDigits() = if (this>=10) this.toString() else "0$this"
 
     override fun onBackPressed() {
-        val builder = AlertDialog.Builder(this)
-        builder.setTitle(getString(R.string.dialog_create_appointment_exit_title))
-        builder.setMessage(getString(R.string.ialog_create_appointment_exit_message))
-        builder.setPositiveButton(getString(R.string.ialog_create_appointment_exit_positive_button)) { _, _ ->
-            finish()
-        }
-        builder.setNegativeButton(getString(R.string.ialog_create_appointment_exit_negative_button)) { dialog, _ ->
-            dialog.dismiss()
-        }
+        when {
+            cvStep3.visibility == View.VISIBLE -> {
+                cvStep3.visibility = View.GONE
+                cvStep2.visibility = View.VISIBLE
+            }
+            cvStep2.visibility == View.VISIBLE -> {
+                cvStep2.visibility = View.GONE
+                cvStep1.visibility = View.VISIBLE
 
-        val dialog = builder.create()
-        dialog.show()
+            }
+            cvStep1.visibility == View.VISIBLE -> {
+                val builder = AlertDialog.Builder(this)
+                builder.setTitle(getString(R.string.dialog_create_appointment_exit_title))
+                builder.setMessage(getString(R.string.ialog_create_appointment_exit_message))
+                builder.setPositiveButton(getString(R.string.ialog_create_appointment_exit_positive_button)) { _, _ ->
+                    finish()
+                }
+                builder.setNegativeButton(getString(R.string.ialog_create_appointment_exit_negative_button)) { dialog, _ ->
+                    dialog.dismiss()
+                }
+
+                val dialog = builder.create()
+                dialog.show()
+            }
+        }
     }
 }

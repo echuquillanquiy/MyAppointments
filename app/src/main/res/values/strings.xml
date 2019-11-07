@@ -42,5 +42,8 @@
     <string name="ialog_create_appointment_exit_message">Si abandonas el registro los datos ingresados se perderán.</string>
     <string name="ialog_create_appointment_exit_positive_button">Si, salir</string>
     <string name="ialog_create_appointment_exit_negative_button">Continuar registro</string>
+    <string name="validate_appointment_description">La descripción es demasiado corta</string>
+    <string name="label_scheduled_time">Hora de la cita</string>
+    <string name="label_confirm_appointment_data">Datos de la cita</string>
 
 </resources>
