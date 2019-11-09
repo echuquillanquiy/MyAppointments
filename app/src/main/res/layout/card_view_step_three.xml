@@ -2,6 +2,7 @@
 <androidx.cardview.widget.CardView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/cvStep3"
     app:contentPadding="12dp"
     app:cardCornerRadius="8dp"
@@ -43,7 +44,7 @@
                     android:layout_width="0dp"
                     android:layout_weight="1"
                     android:layout_height="wrap_content"
-                    android:text="Me duele la cabeza"/>
+                    tools:text="Me duele la cabeza"/>
             </LinearLayout>
 
             <LinearLayout
@@ -63,7 +64,7 @@
                     android:layout_width="0dp"
                     android:layout_weight="1"
                     android:layout_height="wrap_content"
-                    android:text="Oftalmologia"/>
+                    tools:text="Oftalmologia"/>
             </LinearLayout>
 
             <LinearLayout
@@ -83,7 +84,7 @@
                     android:layout_width="0dp"
                     android:layout_weight="1"
                     android:layout_height="wrap_content"
-                    android:text="Consulta"/>
+                    tools:text="Consulta"/>
             </LinearLayout>
 
             <LinearLayout
@@ -103,7 +104,7 @@
                     android:layout_width="0dp"
                     android:layout_weight="1"
                     android:layout_height="wrap_content"
-                    android:text="Médico Test"/>
+                    tools:text="Médico Test"/>
             </LinearLayout>
 
             <LinearLayout
@@ -123,7 +124,7 @@
                     android:layout_width="0dp"
                     android:layout_weight="1"
                     android:layout_height="wrap_content"
-                    android:text="2019-11-07"/>
+                    tools:text="2019-11-07"/>
 
             </LinearLayout>
 
@@ -141,7 +142,7 @@
 
                 <TextView
                     android:id="@+id/tvConfirmTime"
-                    android:text="4:30 PM"
+                    tools:text="4:30 PM"
                     android:layout_width="0dp"
                     android:layout_weight="1"
                     android:layout_height="wrap_content"/>

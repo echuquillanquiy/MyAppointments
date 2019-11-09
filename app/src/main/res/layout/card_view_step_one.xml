@@ -45,21 +45,25 @@
         <RadioGroup
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:id="@+id/radioGroupType"
+            android:checkedButton="@id/rbType1"
             android:layout_marginBottom="8dp"
             android:orientation="vertical">
 
             <RadioButton
+                android:id="@+id/rbType1"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:checked="true"
                 android:text="@string/type1" />
 
             <RadioButton
+                android:id="@+id/rbType2"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/type2" />
 
             <RadioButton
+                android:id="@+id/rbType3"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/type3" />
