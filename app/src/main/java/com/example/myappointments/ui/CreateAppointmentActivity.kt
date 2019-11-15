@@ -1,4 +1,4 @@
-package com.example.myappointments
+package com.example.myappointments.ui
 
 import android.app.AlertDialog
 import android.app.DatePickerDialog
@@ -10,14 +10,23 @@ import android.widget.ArrayAdapter
 import android.widget.RadioButton
 import android.widget.Toast
 import androidx.annotation.RequiresApi
+import com.example.myappointments.R
+import com.example.myappointments.io.ApiService
+import com.example.myappointments.model.Specialty
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.activity_create_appointment.*
 import kotlinx.android.synthetic.main.card_view_step_one.*
 import kotlinx.android.synthetic.main.card_view_step_three.*
 import kotlinx.android.synthetic.main.card_view_step_two.*
 import java.util.*
+import javax.security.auth.callback.Callback
+import kotlin.collections.ArrayList
 
 class CreateAppointmentActivity : AppCompatActivity() {
+
+       val apiService: ApiService by lazy {
+           ApiService.create()
+       }
 
     private val selectedCalendar = Calendar.getInstance()
     private var selectedTimeRadioBtn: RadioButton? = null
@@ -38,7 +47,8 @@ class CreateAppointmentActivity : AppCompatActivity() {
         btnNext2.setOnClickListener {
             when {
                 etScheduledDate.text.toString().isEmpty() -> etScheduledDate.error = getString(R.string.validate_appointment_date)
-                selectedTimeRadioBtn == null -> Snackbar.make(createAppointmentLinearLayout, R.string.validate_appointment_time, Snackbar.LENGTH_SHORT).show()
+                selectedTimeRadioBtn == null -> Snackbar.make(createAppointmentLinearLayout,
+                    R.string.validate_appointment_time, Snackbar.LENGTH_SHORT).show()
                 else -> {
                     showAppointmentDataToConfirm()
                     cvStep2.visibility = View.GONE
@@ -52,11 +62,20 @@ class CreateAppointmentActivity : AppCompatActivity() {
             finish()
         }
 
-        val specialtyOptions = arrayOf("Specialty A", "Specialty B", "Specialty C")
-        spinnerSpecialties.adapter = ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, specialtyOptions)
+        loadSpecialties()
 
         val doctorOptions = arrayOf("Doctor A", "Doctor B", "Doctor C")
         spinnerDoctors.adapter = ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, doctorOptions)
+    }
+
+    private fun loadSpecialties() {
+        val call = apiService.getSpecialties()
+        call.enqueue(object : Callback<ArrayList> {
+
+        })
+
+        val specialtyOptions = arrayOf("Specialty A", "Specialty B", "Specialty C")
+        spinnerSpecialties.adapter = ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, specialtyOptions)
     }
 
     private fun showAppointmentDataToConfirm() {
@@ -82,7 +101,8 @@ class CreateAppointmentActivity : AppCompatActivity() {
         val listener = DatePickerDialog.OnDateSetListener {datepicker, y, m, d ->
             //Toast.makeText(this, "$y-$m-$d", Toast.LENGTH_SHORT).show()
             selectedCalendar.set(y, m, d)
-            etScheduledDate.setText(resources.getString(R.string.date_format,
+            etScheduledDate.setText(resources.getString(
+                R.string.date_format,
                 y,
                 m.twoDigits(),
                 d.twoDigits()
@@ -169,3 +189,4 @@ class CreateAppointmentActivity : AppCompatActivity() {
         }
     }
 }
+
