@@ -19,9 +19,9 @@ import kotlinx.android.synthetic.main.card_view_step_one.*
 import kotlinx.android.synthetic.main.card_view_step_three.*
 import kotlinx.android.synthetic.main.card_view_step_two.*
 import retrofit2.Call
+import retrofit2.Callback
 import retrofit2.Response
 import java.util.*
-import javax.security.auth.callback.Callback
 import kotlin.collections.ArrayList
 
 class CreateAppointmentActivity : AppCompatActivity() {
@@ -72,7 +72,7 @@ class CreateAppointmentActivity : AppCompatActivity() {
 
     private fun loadSpecialties() {
         val call = apiService.getSpecialties()
-        call.enqueue(object : Callback<ArrayList<Specialty>>, retrofit2.Callback<ArrayList<Specialty>> {
+        call.enqueue(object : Callback<ArrayList<Specialty>> {
             override fun onFailure(call: Call<ArrayList<Specialty>>, t: Throwable) {
                 TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
             }
