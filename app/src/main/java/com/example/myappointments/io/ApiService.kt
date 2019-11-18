@@ -12,7 +12,7 @@ interface ApiService {
     abstract fun getSpecialties(): Call<ArrayList<Specialty>>
 
     companion object Factory {
-        private const val  BASE_URL = "http://142.93.190.167/"
+        private const val  BASE_URL = "http://142.93.190.167/api/"
 
         fun create(): ApiService {
             val retrofit = Retrofit.Builder()

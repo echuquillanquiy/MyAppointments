@@ -26,7 +26,7 @@ import kotlin.collections.ArrayList
 
 class CreateAppointmentActivity : AppCompatActivity() {
 
-       val apiService: ApiService by lazy {
+    private val apiService: ApiService by lazy {
            ApiService.create()
        }
 
@@ -74,20 +74,23 @@ class CreateAppointmentActivity : AppCompatActivity() {
         val call = apiService.getSpecialties()
         call.enqueue(object : Callback<ArrayList<Specialty>> {
             override fun onFailure(call: Call<ArrayList<Specialty>>, t: Throwable) {
-                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+                Toast.makeText(this@CreateAppointmentActivity, getString(R.string.error_loading_specialties), Toast.LENGTH_SHORT).show()
+                finish()
             }
 
-            override fun onResponse(
-                call: Call<ArrayList<Specialty>>,
-                response: Response<ArrayList<Specialty>>
-            ) {
-                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+            override fun onResponse(call: Call<ArrayList<Specialty>>, response: Response<ArrayList<Specialty>>) {
+                if (response.isSuccessful){
+                    val specialties = response.body()
+                    val specialtyOptions = ArrayList<String>()
+
+                    specialties?.forEach {
+                        specialtyOptions.add(it.name)
+                    }
+                    spinnerSpecialties.adapter = ArrayAdapter<String>(this@CreateAppointmentActivity, android.R.layout.simple_list_item_1, specialtyOptions)
+                }
             }
 
         })
-
-        val specialtyOptions = arrayOf("Specialty A", "Specialty B", "Specialty C")
-        spinnerSpecialties.adapter = ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, specialtyOptions)
     }
 
     private fun showAppointmentDataToConfirm() {
