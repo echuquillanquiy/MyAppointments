@@ -6,6 +6,7 @@ import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
+import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.RadioButton
 import android.widget.Toast
@@ -27,8 +28,8 @@ import kotlin.collections.ArrayList
 class CreateAppointmentActivity : AppCompatActivity() {
 
     private val apiService: ApiService by lazy {
-           ApiService.create()
-       }
+        ApiService.create()
+    }
 
     private val selectedCalendar = Calendar.getInstance()
     private var selectedTimeRadioBtn: RadioButton? = null
@@ -65,6 +66,7 @@ class CreateAppointmentActivity : AppCompatActivity() {
         }
 
         loadSpecialties()
+        loadDoctors()
 
         val doctorOptions = arrayOf("Doctor A", "Doctor B", "Doctor C")
         spinnerDoctors.adapter = ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, doctorOptions)
@@ -81,16 +83,29 @@ class CreateAppointmentActivity : AppCompatActivity() {
             override fun onResponse(call: Call<ArrayList<Specialty>>, response: Response<ArrayList<Specialty>>) {
                 if (response.isSuccessful){ //200 ...300
                     val specialties = response.body()
-                    val specialtyOptions = ArrayList<String>()
 
-                    specialties?.forEach {
-                        specialtyOptions.add(it.name)
+                    spinnerSpecialties.adapter = specialties?.let {
+                        ArrayAdapter<Specialty>(this@CreateAppointmentActivity, android.R.layout.simple_list_item_1, it)
                     }
-                    spinnerSpecialties.adapter = ArrayAdapter<String>(this@CreateAppointmentActivity, android.R.layout.simple_list_item_1, specialtyOptions)
                 }
             }
 
         })
+    }
+
+    private fun loadDoctors(){
+        spinnerSpecialties.onItemSelectedListener = object: AdapterView.OnItemSelectedListener {
+            override fun onNothingSelected(parent: AdapterView<*>?) {
+
+            }
+
+            override fun onItemSelected(adapter: AdapterView<*>?, view: View?, position: Int, id: Long) {
+                val specialty = adapter?.getItemAtPosition(position) as Specialty
+                Toast.makeText(this@CreateAppointmentActivity, specialty.name, Toast.LENGTH_SHORT).show()
+
+            }
+
+        }
     }
 
     private fun showAppointmentDataToConfirm() {
@@ -121,7 +136,7 @@ class CreateAppointmentActivity : AppCompatActivity() {
                 y,
                 m.twoDigits(),
                 d.twoDigits()
-                )
+            )
             )
             etScheduledDate.error = null
             displayRadioButtons()
