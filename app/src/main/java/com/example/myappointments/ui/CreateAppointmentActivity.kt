@@ -79,7 +79,7 @@ class CreateAppointmentActivity : AppCompatActivity() {
             }
 
             override fun onResponse(call: Call<ArrayList<Specialty>>, response: Response<ArrayList<Specialty>>) {
-                if (response.isSuccessful){
+                if (response.isSuccessful){ //200 ...300
                     val specialties = response.body()
                     val specialtyOptions = ArrayList<String>()
 
