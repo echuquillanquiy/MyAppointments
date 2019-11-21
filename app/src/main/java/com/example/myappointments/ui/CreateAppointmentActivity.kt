@@ -13,6 +13,7 @@ import android.widget.Toast
 import androidx.annotation.RequiresApi
 import com.example.myappointments.R
 import com.example.myappointments.io.ApiService
+import com.example.myappointments.model.Doctor
 import com.example.myappointments.model.Specialty
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.activity_create_appointment.*
@@ -66,7 +67,7 @@ class CreateAppointmentActivity : AppCompatActivity() {
         }
 
         loadSpecialties()
-        loadDoctors()
+        listenSpecialtyChanges()
 
         val doctorOptions = arrayOf("Doctor A", "Doctor B", "Doctor C")
         spinnerDoctors.adapter = ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, doctorOptions)
@@ -93,7 +94,7 @@ class CreateAppointmentActivity : AppCompatActivity() {
         })
     }
 
-    private fun loadDoctors(){
+    private fun listenSpecialtyChanges(){
         spinnerSpecialties.onItemSelectedListener = object: AdapterView.OnItemSelectedListener {
             override fun onNothingSelected(parent: AdapterView<*>?) {
 
@@ -101,11 +102,29 @@ class CreateAppointmentActivity : AppCompatActivity() {
 
             override fun onItemSelected(adapter: AdapterView<*>?, view: View?, position: Int, id: Long) {
                 val specialty = adapter?.getItemAtPosition(position) as Specialty
-                Toast.makeText(this@CreateAppointmentActivity, specialty.name, Toast.LENGTH_SHORT).show()
-
+                loadDoctors(specialty.id)
             }
 
         }
+    }
+    private fun loadDoctors(specialtyId: Int){
+        val call = apiService.getDoctors(specialtyId)
+        call.enqueue(object: Callback<ArrayList<Doctor>>{
+            override fun onFailure(call: Call<ArrayList<Doctor>>, t: Throwable) {
+                Toast.makeText(this@CreateAppointmentActivity, getString(R.string.error_loading_doctors), Toast.LENGTH_SHORT).show()
+
+            }
+
+            override fun onResponse(
+                call: Call<ArrayList<Doctor>>, response: Response<ArrayList<Doctor>>) {
+                if (response.isSuccessful){ //200 ...300
+                    val doctors = response.body()
+                    spinnerDoctors.adapter = doctors?.let {ArrayAdapter<Doctor>(this@CreateAppointmentActivity, android.R.layout.simple_list_item_1, it)
+                    }
+                }
+            }
+
+        })
     }
 
     private fun showAppointmentDataToConfirm() {
