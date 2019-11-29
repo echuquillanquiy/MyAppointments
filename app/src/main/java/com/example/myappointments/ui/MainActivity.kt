@@ -3,6 +3,7 @@ package com.example.myappointments.ui
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.widget.Toast
 import com.example.myappointments.util.PreferenceHelper
 import kotlinx.android.synthetic.main.activity_main.*
@@ -13,6 +14,7 @@ import com.example.myappointments.io.ApiService
 import com.example.myappointments.io.response.LoginResponse
 import com.example.myappointments.util.toast
 import com.google.android.material.snackbar.Snackbar
+import com.google.firebase.iid.FirebaseInstanceId
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -31,6 +33,11 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        FirebaseInstanceId.getInstance().instanceId.addOnSuccessListener(this) {
+            instanceIdResult -> val deviceToken = instanceIdResult.token
+            Log.d("FCMService", deviceToken)
+        }
 
         /*
         var preferences = getSharedPreferences("general", Context.MODE_PRIVATE)

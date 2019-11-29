@@ -16,9 +16,13 @@ import android.widget.Toast
 import androidx.annotation.RequiresApi
 import com.example.myappointments.R
 import com.example.myappointments.io.ApiService
+import com.example.myappointments.io.response.SimpleResponse
 import com.example.myappointments.model.Doctor
 import com.example.myappointments.model.Schedule
 import com.example.myappointments.model.Specialty
+import com.example.myappointments.util.PreferenceHelper
+import com.example.myappointments.util.PreferenceHelper.get
+import com.example.myappointments.util.toast
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.activity_create_appointment.*
 import kotlinx.android.synthetic.main.card_view_step_one.*
@@ -34,6 +38,10 @@ class CreateAppointmentActivity : AppCompatActivity() {
 
     private val apiService: ApiService by lazy {
         ApiService.create()
+    }
+
+    private val preferences by lazy {
+        PreferenceHelper.defaultPrefs(this)
     }
 
     private val selectedCalendar = Calendar.getInstance()
@@ -66,14 +74,53 @@ class CreateAppointmentActivity : AppCompatActivity() {
         }
 
         btnConfirmAppointment.setOnClickListener {
-            Toast.makeText(this, "Cita registrada correctamente.", Toast.LENGTH_SHORT).show()
-            finish()
+            performStoreAppointment()
         }
 
         loadSpecialties()
         listenSpecialtyChanges()
         listenDoctorAndDateChanges()
     }
+
+    private fun performStoreAppointment() {
+
+        btnConfirmAppointment.isClickable = false
+
+        val jwt = preferences["jwt", ""]
+        val authHeader = "Bearer $jwt"
+        val description = tvConfirmDescription.text.toString()
+        val specialty = spinnerSpecialties.selectedItem as Specialty
+        val doctor = spinnerDoctors.selectedItem as Doctor
+        val scheduled_date = tvConfirmDate.text.toString()
+        val scheduledTime = tvConfirmTime.text.toString()
+        val type = tvConfirmType.text.toString()
+
+        val call = apiService.storeAppointment(
+            authHeader, description,
+            specialty.id, doctor.id,
+            scheduled_date, scheduledTime,
+            type
+        )
+        call.enqueue(object: Callback<SimpleResponse> {
+            override fun onFailure(call: Call<SimpleResponse>, t: Throwable) {
+                toast(t.localizedMessage)
+            }
+
+            override fun onResponse(call: Call<SimpleResponse>, response: Response<SimpleResponse> ) {
+                if (response.isSuccessful){
+                    toast(getString(R.string.create_appointment_success))
+                    finish()
+                } else {
+                    toast(getString(R.string.create_appointment_error))
+                    btnConfirmAppointment.isClickable = true
+                }
+            }
+
+        })
+
+
+    }
+
 
     private fun listenDoctorAndDateChanges(){
         spinnerDoctors.onItemSelectedListener = object: AdapterView.OnItemSelectedListener {
