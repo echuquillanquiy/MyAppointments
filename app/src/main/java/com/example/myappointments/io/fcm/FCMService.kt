@@ -11,14 +11,56 @@ import android.net.Uri
 import android.os.Build
 import android.util.Log
 import androidx.core.app.NotificationCompat
+import com.example.myappointments.io.ApiService
 import com.example.myappointments.ui.MainActivity
+import com.example.myappointments.util.PreferenceHelper
+import com.example.myappointments.util.PreferenceHelper.get
+import com.example.myappointments.util.toast
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
+import retrofit2.Call
+import retrofit2.Response
 
 
 class FCMService : FirebaseMessagingService() {
 
+    private val apiService by lazy {
+        ApiService.create()
+    }
 
+    private val preferences by lazy {
+        PreferenceHelper.defaultPrefs(this)
+    }
+
+    override fun onNewToken(newToken: String) {
+        super.onNewToken(newToken)
+
+        if (newToken == null)
+            return
+
+        val jwt = preferences["jwt", ""]
+        if (jwt.isEmpty())
+            return
+
+        val authHeader = "Bearer $jwt"
+
+        val call = apiService.postToken(authHeader, newToken)
+
+        call.enqueue(object: retrofit2.Callback<Void> {
+            override fun onFailure(call: Call<Void>, t: Throwable) {
+                toast(t.localizedMessage)
+            }
+
+            override fun onResponse(call: Call<Void>, response: Response<Void>) {
+                if (response.isSuccessful) {
+                    Log.d(TAG, "Token registrado correctamente")
+                } else {
+                    Log.d(TAG, "Hubo problema al registrar el token")
+                }
+            }
+
+        })
+    }
 
     /**
      * Called when message is received.
@@ -51,8 +93,13 @@ class FCMService : FirebaseMessagingService() {
         }
         // Check if message contains a notification payload.
         remoteMessage.notification.let {
-            Log.d(TAG, "Message Notification Body: " + remoteMessage.notification?.body)
+            val title =  remoteMessage.notification?.title ?: getString(R.string.ok)
+            val body =remoteMessage.notification?.body
+
+            if (body != null)
+                sendNotification(title, body)
         }
+
 
         // Also if you intend on generating your own notifications as a result of a received FCM
 // message, here is where that should be initiated. See sendNotification method below.
@@ -66,13 +113,7 @@ class FCMService : FirebaseMessagingService() {
      * the previous token had been compromised. Note that this is called when the InstanceID token
      * is initially generated so this is where you would retrieve the token.
      */
-    override fun onNewToken(token: String) {
-        Log.d(TAG, "Refreshed token: $token")
-        // If you want to send messages to this application instance or
-// manage this apps subscriptions on the server side, send the
-// Instance ID token to your app server.
-        sendRegistrationToServer(token)
-    }
+
     // [END on_new_token]
     /**
      * Schedule async work using WorkManager.
@@ -102,7 +143,7 @@ class FCMService : FirebaseMessagingService() {
      *
      * @param messageBody FCM message body received.
      */
-    private fun sendNotification(messageBody: String) {
+    private fun sendNotification(messageTitle: String, messageBody: String) {
         val intent = Intent(this, MainActivity::class.java)
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
         val pendingIntent = PendingIntent.getActivity(
@@ -113,8 +154,8 @@ class FCMService : FirebaseMessagingService() {
         val defaultSoundUri: Uri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
         val notificationBuilder =
             NotificationCompat.Builder(this, channelId)
-                .setSmallIcon(R.drawable.ic_delete)
-                .setContentTitle("FCM Message")
+                .setSmallIcon(R.drawable.ic_lock_idle_alarm)
+                .setContentTitle(messageTitle)
                 .setContentText(messageBody)
                 .setAutoCancel(true)
                 .setSound(defaultSoundUri)
