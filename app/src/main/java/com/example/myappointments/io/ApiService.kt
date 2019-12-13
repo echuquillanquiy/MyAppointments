@@ -2,10 +2,7 @@ package com.example.myappointments.io
 
 import com.example.myappointments.io.response.LoginResponse
 import com.example.myappointments.io.response.SimpleResponse
-import com.example.myappointments.model.Appointment
-import com.example.myappointments.model.Doctor
-import com.example.myappointments.model.Schedule
-import com.example.myappointments.model.Specialty
+import com.example.myappointments.model.*
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Call
@@ -15,6 +12,19 @@ import retrofit2.http.*
 
 
 interface ApiService {
+
+    @GET("user")
+    @Headers("Accept: application/json")
+    fun getUser(@Header("Authorization") authHeader: String): Call<User>
+
+    @POST("user")
+    @Headers("Accept: application/json")
+    fun postUser(
+        @Header("Authorization") authHeader: String,
+        @Query("name") name: String,
+        @Query("phone") phone: String,
+        @Query("address") address: String
+    ): Call<Void>
 
     @GET("specialties")
     fun getSpecialties(): Call<ArrayList<Specialty>>
@@ -64,7 +74,7 @@ interface ApiService {
     ): Call<Void>
 
     companion object Factory {
-        private const val  BASE_URL = "http://142.93.190.167/api/"
+        private const val  BASE_URL = "http://167.172.247.128/api/"
 
         fun create(): ApiService {
             val interceptor = HttpLoggingInterceptor()
